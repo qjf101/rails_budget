@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  category: one
+  date: 2026-09-09
+  amount_cents: 1
+  transaction_type: MyString
+  description: MyString
+  notes: MyText
+  source: MyString
+  external_id: MyString
+
+two:
+  user: two
+  category: two
+  date: 2026-09-09
+  amount_cents: 1
+  transaction_type: MyString
+  description: MyString
+  notes: MyText
+  source: MyString
+  external_id: MyString

@@ -55,8 +55,14 @@ user.transactions.find_or_create_by!(date: Date.current.beginning_of_month + 1.d
   t.category = income_category
 end
 
-user.goals.find_or_create_by!(name: "Emergency Fund") do |g|
-  g.target_cents = 5_000_00   
-  g.current_cents = 2_100_00   
+emergency_fund = user.savings.goals.find_or_create_by!(name: "Emergency Fund") do |g|
+  g.target_cents = 5_000_00
   g.target_date = 6.months.from_now.to_date
+  g.icon = "piggy-bank"
+  g.color = "#3b82f6"
+end
+
+emergency_fund.goal_contributions.find_or_create_by!(note: "Starting balance") do |c|
+  c.amount_cents = 2_100_00
+  c.contributed_at = Date.current
 end

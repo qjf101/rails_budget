@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+#
+# "savings".classify => "Saving" (singular), not "Savings" — Rails' inflector can't guess
+# our actual model name from an inherently-plural-looking word, so it wouldn't know `user:`
+# below is a belongs_to association to resolve into user_id. Told explicitly here instead.
+_fixture:
+  model_class: Savings
+
+one:
+  user: one
+
+two:
+  user: two

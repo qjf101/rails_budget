@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_10_011621) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_12_183931) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,21 +47,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_011621) do
     t.index ["user_id"], name: "index_categories_on_user_id"
   end
 
-  create_table "goals", force: :cascade do |t|
+  create_table "goal_contributions", force: :cascade do |t|
+    t.integer "amount_cents"
+    t.date "contributed_at"
     t.datetime "created_at", null: false
-    t.integer "current_cents"
+    t.bigint "goal_id"
+    t.string "note"
+    t.bigint "savings_id", null: false
+    t.bigint "transaction_id"
+    t.datetime "updated_at", null: false
+    t.index ["goal_id"], name: "index_goal_contributions_on_goal_id"
+    t.index ["savings_id"], name: "index_goal_contributions_on_savings_id"
+    t.index ["transaction_id"], name: "index_goal_contributions_on_transaction_id"
+  end
+
+  create_table "goals", force: :cascade do |t|
+    t.string "color"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
     t.string "icon"
     t.string "name"
+    t.bigint "savings_id", null: false
     t.integer "target_cents"
     t.date "target_date"
     t.datetime "updated_at", null: false
+    t.index ["savings_id"], name: "index_goals_on_savings_id"
+  end
+
+  create_table "savings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_goals_on_user_id"
+    t.index ["user_id"], name: "index_savings_on_user_id", unique: true
   end
 
   create_table "transactions", force: :cascade do |t|
     t.integer "amount_cents"
-    t.bigint "category_id", null: false
+    t.bigint "category_id"
     t.datetime "created_at", null: false
     t.date "date"
     t.string "description"
@@ -92,7 +114,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_011621) do
   add_foreign_key "budget_allocations", "categories"
   add_foreign_key "budgets", "users"
   add_foreign_key "categories", "users"
-  add_foreign_key "goals", "users"
+  add_foreign_key "goal_contributions", "goals"
+  add_foreign_key "goal_contributions", "savings", column: "savings_id"
+  add_foreign_key "goal_contributions", "transactions"
+  add_foreign_key "goals", "savings", column: "savings_id"
+  add_foreign_key "savings", "users"
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"
 end

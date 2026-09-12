@@ -5,10 +5,10 @@ one:
   category: one
   date: 2026-09-09
   amount_cents: 1
-  transaction_type: MyString
+  transaction_type: expense
   description: MyString
   notes: MyText
-  source: MyString
+  source: manual
   external_id: MyString
 
 two:
@@ -16,8 +16,8 @@ two:
   category: two
   date: 2026-09-09
   amount_cents: 1
-  transaction_type: MyString
+  transaction_type: expense
   description: MyString
   notes: MyText
-  source: MyString
+  source: manual
   external_id: MyString

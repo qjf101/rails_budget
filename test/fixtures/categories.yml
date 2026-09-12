@@ -3,15 +3,15 @@
 one:
   user: one
   name: MyString
-  icon: MyString
-  color: MyString
-  category_type: MyString
+  icon: home
+  color: "#3b82f6"
+  category_type: expense
   position: 1
 
 two:
   user: two
   name: MyString
-  icon: MyString
-  color: MyString
-  category_type: MyString
+  icon: home
+  color: "#3b82f6"
+  category_type: expense
   position: 1

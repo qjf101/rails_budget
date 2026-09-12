@@ -1,5 +1,22 @@
 Rails.application.routes.draw do
   devise_for :users
+
+  root "dashboard#index"
+
+  resources :transactions, except: [:show]
+  resources :goals, except: [:show] do
+    resources :contributions, only: [:create, :destroy], controller: "goal_contributions"
+  end
+  post "goal_transfers", to: "goal_transfers#create"
+
+  get  "budget", to: "budget#allocate"
+  get  "budget/calendar", to: "budget#calendar"
+  patch "budget", to: "budget#update_allocations"
+
+  get "reports", to: "reports#index"
+  get "settings", to: "settings#edit"
+  resources :categories, only: [:index, :create, :update, :destroy]
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -9,7 +26,4 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end

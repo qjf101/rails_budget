@@ -1,13 +1,17 @@
-<div class="flex items-center justify-between px-8 py-5 bg-white border-b border-gray-200">
-  <div class="flex items-center gap-2.5">
+<div class="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-5 bg-white border-b border-gray-200">
+  <div class="flex items-center gap-3">
+    <button type="button" data-action="sidebar#toggle" class="lg:hidden bg-transparent border-0 cursor-pointer p-0 shrink-0">
+      <svg class="w-6 h-6 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+    </button>
+
     <% if content_for?(:page_icon) %>
-      <span class="text-green-800"><%= yield :page_icon %></span>
+      <span class="text-green-800 hidden sm:inline"><%= yield :page_icon %></span>
     <% end %>
-    <h1 class="text-xl font-bold text-gray-900"><%= content_for(:page_heading) || "Dashboard" %></h1>
+    <h1 class="text-lg sm:text-xl font-bold text-gray-900 truncate"><%= content_for(:page_heading) || "Dashboard" %></h1>
   </div>
 
-  <div class="flex items-center gap-6">
-    <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+  <div class="flex items-center gap-4 sm:gap-6">
+    <svg class="hidden sm:block w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
     <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0v4l2 3H4l2-3v-4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
     <div class="relative" data-controller="dropdown" data-action="click@window->dropdown#hide">
       <button type="button" data-action="dropdown#toggle" class="block bg-transparent border-0 cursor-pointer p-0">

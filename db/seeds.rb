@@ -40,11 +40,24 @@ categories.each do |category|
   end
 end
 
+merchant_names = {
+  "Housing"           => ["Rent Payment", "Mortgage Payment", "HOA Fees"],
+  "Food & Dining"     => ["Whole Foods", "Chipotle", "Starbucks", "DoorDash", "Corner Diner"],
+  "Transport"         => ["Uber", "Shell Gas Station", "Metro Transit", "Lyft"],
+  "Shopping"          => ["Amazon", "Target", "Best Buy", "H&M"],
+  "Entertainment"     => ["Netflix", "AMC Theatres", "Spotify", "Steam"],
+  "Bills & Utilities" => ["Electric Company", "Internet Provider", "Water Utility", "Phone Bill"],
+  "Savings"           => ["Transfer to Savings", "Emergency Fund Deposit"],
+  "Other"             => ["Miscellaneous Purchase", "ATM Withdrawal", "Cash Expense"],
+}
+
 25.times do |i|
-  date = Date.current.beginning_of_month + rand(0..27).days
-  category = categories.sample
-  user.transactions.find_or_create_by!(date: date, category: category, description: "#{category.name} expense #{i}") do |t|
-    t.amount_cents = rand(5..150) * 100 
+  user.transactions.find_or_create_by!(external_id: "seed-expense-#{i}") do |t|
+    category = categories.sample
+    t.date = Date.current.beginning_of_month + rand(0..27).days
+    t.category = category
+    t.description = merchant_names.fetch(category.name).sample
+    t.amount_cents = rand(5..150) * 100
     t.transaction_type = :expense
   end
 end

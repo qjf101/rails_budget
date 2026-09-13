@@ -1,0 +1,28 @@
+<%#
+  locals: achievement (an AchievementCalculator::Achievement struct: title, description, icon)
+  `icon` is one of a small fixed set of achievement badges — not a user-facing Iconable icon —
+  so it's mapped inline here rather than through Iconable::ICON_KEYS.
+%>
+<% icon_path = {
+     "trophy"       => '<path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 4H5a3 3 0 0 0 3 5"/><path d="M16 4h3a3 3 0 0 1-3 5"/><path d="M12 12v3"/><path d="M9 19h6"/><path d="M10 16h4l.5 3h-5z"/>',
+     "flame"        => '<path d="M12 3c1 3-2 4-2 7a3 3 0 0 0 6 0c1.5 1 2 3 2 4.5a5.5 5.5 0 0 1-11 0C7 10 10 8 12 3z"/>',
+     "piggy-bank"   => '<path d="M4 11a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1h1.5l.5 2h-2v2a1 1 0 0 1-1 1h-1v1h-2v-1H9v1H7v-1H6a2 2 0 0 1-2-2v-4z"/><circle cx="15" cy="10" r="0.6" fill="currentColor" stroke="none"/>',
+     "shield-check" => '<path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+   }.fetch(achievement.icon, '<circle cx="12" cy="12" r="8"/>') %>
+
+<% badge_classes = {
+     "trophy"       => "bg-amber-50 text-amber-600",
+     "flame"        => "bg-orange-50 text-orange-600",
+     "piggy-bank"   => "bg-green-50 text-green-700",
+     "shield-check" => "bg-purple-50 text-purple-600",
+   }.fetch(achievement.icon, "bg-gray-100 text-gray-500") %>
+
+<div class="flex items-start gap-3 border border-gray-100 rounded-xl p-3">
+  <div class="w-10 h-10 rounded-lg <%= badge_classes %> flex items-center justify-center shrink-0">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><%= icon_path.html_safe %></svg>
+  </div>
+  <div>
+    <p class="text-sm font-bold text-gray-900"><%= achievement.title %></p>
+    <p class="text-xs text-gray-500"><%= achievement.description %></p>
+  </div>
+</div>

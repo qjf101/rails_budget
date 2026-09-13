@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= render "layouts/head" %>
+  </head>
+
+  <body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col items-center justify-center px-4">
+      <div class="flex items-center gap-2 mb-8">
+        <div class="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15l6-6 4 4 6-8"/><path d="M15 5h5v5"/></svg>
+        </div>
+        <span class="text-lg font-extrabold text-green-700">budget app</span>
+      </div>
+
+      <div class="w-full max-w-sm bg-white rounded-2xl shadow-sm p-8">
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

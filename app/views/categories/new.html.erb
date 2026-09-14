@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= render "form_modal", category: @category, title: "New Category",
+        submit_label: "Create Category", url: categories_path, method: :post %>
+<% end %>

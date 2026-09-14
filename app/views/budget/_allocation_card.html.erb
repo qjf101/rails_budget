@@ -1,0 +1,57 @@
+<%# locals: category, amount_cents, suggested_cents, income_cents %>
+<% percent = income_cents.zero? ? 0 : ((amount_cents.to_f / income_cents) * 100).round %>
+
+<div data-allocation-card class="group relative border border-gray-200 rounded-xl p-4">
+  <div class="flex items-center gap-2.5 mb-3 pr-5">
+    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="<%= category_badge_style(category.color) %>">
+      <%= icon_svg(category.icon || "more-horizontal", class_name: "w-4 h-4") %>
+    </div>
+    <p class="min-w-0 font-bold text-gray-900 truncate"><%= category.name %></p>
+
+    <%# Absolutely placed: in flow, the always-present (if invisible) button would
+        permanently narrow the category name. Revealed on hover; focus-within keeps
+        it up while its menu is open. %>
+    <div class="absolute top-3.5 right-3 opacity-0 focus-within:opacity-100 group-hover:opacity-100 transition-opacity"
+         data-controller="dropdown" data-action="click@window->dropdown#hide">
+      <button type="button" data-action="dropdown#toggle"
+              class="text-gray-300 hover:text-gray-600 p-1 rounded-md cursor-pointer"
+              aria-label="<%= category.name %> actions">
+        <svg class="w-4 h-4 pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+      </button>
+
+      <div data-dropdown-target="menu"
+           class="hidden absolute right-0 top-full mt-1 z-20 w-32 bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-left">
+        <%= link_to "Edit", edit_category_path(category), data: { turbo_frame: "modal" },
+              class: "block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50" %>
+        <%# A link, not button_to: this card sits inside the budget form and a
+            nested <form> would be torn out by the HTML parser. %>
+        <%= link_to "Delete", category_path(category),
+              data: { turbo_method: :delete,
+                      turbo_confirm: "Delete \"#{category.name}\"? Its transactions will be left uncategorized." },
+              class: "block px-3 py-2 text-sm text-red-600 hover:bg-red-50" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative">
+    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
+    <%= number_field_tag "allocations[#{category.id}]", (amount_cents.to_f / 100).round,
+          step: 1, min: 0, placeholder: "0",
+          class: "w-full rounded-lg border border-gray-200 bg-white pl-7 pr-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600",
+          data: {
+            budget_allocator_target: "allocation",
+            action: "input->budget-allocator#recalculate",
+            category_id: category.id,
+            suggested: (suggested_cents.to_f / 100).round,
+          } %>
+  </div>
+
+  <div class="h-1.5 rounded-full bg-gray-100 overflow-hidden mt-3">
+    <div data-bar class="h-full rounded-full" style="width: <%= [percent, 100].min %>%; background-color: <%= category.color || "#6b7280" %>"></div>
+  </div>
+
+  <div class="flex items-center justify-between gap-2 mt-2">
+    <span data-percent class="text-[11px] font-semibold text-gray-600 whitespace-nowrap"><%= percent %>% of income</span>
+    <span class="text-[11px] text-gray-400 whitespace-nowrap"><%= BudgetPlanner.label_for(category) %></span>
+  </div>
+</div>

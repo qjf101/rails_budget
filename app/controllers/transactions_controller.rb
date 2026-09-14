@@ -79,7 +79,7 @@ class TransactionsController < ApplicationController
 
   def destroy
     @transaction.destroy
-    redirect_to transactions_path, notice: "Transaction removed."
+    redirect_to transactions_path, notice: "Transaction removed.", status: :see_other
   end
 
   private
@@ -140,7 +140,7 @@ class TransactionsController < ApplicationController
         flash[:notice] = message
         render turbo_stream: turbo_stream.action(:refresh, "")
       end
-      format.html { redirect_to transactions_path, notice: message }
+      format.html { redirect_to transactions_path, notice: message, status: :see_other }
     end
   end
 

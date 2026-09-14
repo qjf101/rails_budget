@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= render "form_modal", category: @category, title: "Edit Category",
+        submit_label: "Save Changes", url: category_path(@category), method: :patch %>
+<% end %>

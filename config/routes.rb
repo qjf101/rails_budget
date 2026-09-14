@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
   get "reports", to: "reports#index"
   get "settings", to: "settings#edit"
-  resources :categories, only: [:index, :create, :update, :destroy]
+  resources :categories, only: [:index, :new, :create, :edit, :update, :destroy]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

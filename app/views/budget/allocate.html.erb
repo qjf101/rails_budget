@@ -1,0 +1,162 @@
+<% content_for(:page_heading, "Budget") %>
+<% content_for(:page_icon) do %>
+  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 14h4"/></svg>
+<% end %>
+
+<%= form_with url: budget_path, method: :patch, data: { controller: "budget-allocator" } do %>
+  <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_380px] gap-5">
+    <div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-green-600 text-white flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/></svg>
+            </div>
+            <p class="font-bold text-gray-900 flex-1">Monthly Income</p>
+          </div>
+
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xl font-extrabold text-gray-900">$</span>
+            <%= number_field_tag :income, (@income_cents.to_f / 100).round, step: 1, min: 0, placeholder: "0",
+                  class: "w-full rounded-lg border border-gray-200 bg-white pl-8 pr-3 py-2 text-xl font-extrabold text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600",
+                  data: { budget_allocator_target: "income", action: "input->budget-allocator#recalculate" } %>
+          </div>
+
+          <p class="flex items-center gap-1.5 text-xs text-gray-400 mt-3">
+            <svg class="w-3.5 h-3.5 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+            Your total take-home income for the month
+          </p>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-green-700 text-white flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-9-9"/><path d="M12 3a9 9 0 019 9h-9z"/></svg>
+            </div>
+            <p class="font-bold text-gray-900 flex-1">Budget Allocation</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="flex-1 h-2.5 rounded-full bg-gray-100 overflow-hidden">
+              <div data-budget-allocator-target="allocatedBar" class="h-full rounded-full bg-green-600" style="width: <%= [@allocated_percent, 100].min %>%"></div>
+            </div>
+            <span data-budget-allocator-target="allocatedPercent" class="text-sm font-extrabold text-gray-900"><%= @allocated_percent %>%</span>
+          </div>
+
+          <div class="flex items-center justify-between gap-3 mt-3 text-xs text-gray-400">
+            <span>
+              <span data-budget-allocator-target="allocatedTotal"><%= usd(@allocated_cents) %></span>
+              of <%= usd(@income_cents) %> allocated
+            </span>
+            <span class="whitespace-nowrap">
+              Remaining: <span data-budget-allocator-target="remainingTotal"><%= usd(@remaining_cents) %></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-6 mb-5">
+        <div class="flex items-start justify-between gap-4 flex-wrap mb-5">
+          <div>
+            <h2 class="text-lg font-bold text-gray-900">Allocate Your Budget</h2>
+            <p class="text-sm text-gray-400 mt-0.5">We've suggested a plan for you. Adjust the amounts as needed.</p>
+          </div>
+
+          <button type="button" data-action="budget-allocator#applyPlan"
+                  class="inline-flex items-center gap-2 bg-white border border-green-600 text-green-700 font-bold text-sm rounded-lg px-4 py-2.5 hover:bg-green-50 cursor-pointer shrink-0">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 3.9L17.5 8.5 13.6 10 12 14l-1.6-4L6.5 8.5l3.9-1.6z"/><path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+            Use Automatic Plan
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <% @categories.each do |category| %>
+            <%= render "allocation_card",
+                  category: category,
+                  amount_cents: @allocations[category.id]&.amount_cents.to_i,
+                  suggested_cents: BudgetPlanner.suggested_cents(category, @income_cents),
+                  income_cents: @income_cents %>
+          <% end %>
+
+          <%= link_to new_category_path, data: { turbo_frame: "modal" },
+                class: "border-2 border-dashed border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-2 min-h-[150px] hover:border-green-600 hover:bg-green-50/40" do %>
+            <span class="w-9 h-9 rounded-full border-2 border-green-600 text-green-700 flex items-center justify-center">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span class="font-bold text-gray-900 text-sm">Add New Category</span>
+            <span class="text-xs text-gray-400">Track anything the list doesn't cover.</span>
+          <% end %>
+        </div>
+      </div>
+
+      <div data-budget-allocator-target="statusPanel" class="bg-green-50 border border-green-100 rounded-2xl p-5 flex items-center justify-between gap-4 flex-wrap">
+        <div class="min-w-0">
+          <p class="font-bold text-gray-900">How you're tracking</p>
+          <p data-budget-allocator-target="statusMessage" class="text-sm text-gray-600 mt-0.5"></p>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+          <button type="button" data-action="budget-allocator#reset"
+                  class="bg-white border border-gray-200 text-gray-700 font-bold text-sm rounded-lg px-5 py-2.5 hover:bg-gray-50 cursor-pointer">Reset</button>
+          <%= submit_tag "Save Budget", class: "bg-green-700 hover:bg-green-800 text-white font-bold text-sm rounded-lg px-5 py-2.5 cursor-pointer" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-6 self-start">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">Budget Summary</h2>
+
+      <dl class="space-y-3 pb-4 border-b border-gray-100">
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-sm text-gray-500">Total Income</dt>
+          <dd class="font-extrabold text-gray-900"><%= usd(@income_cents) %></dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-sm text-gray-500">Total Allocated</dt>
+          <dd data-budget-allocator-target="allocatedTotal" class="font-extrabold text-gray-900"><%= usd(@allocated_cents) %></dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-sm text-gray-500">Remaining</dt>
+          <dd data-budget-allocator-target="remainingTotal" class="font-extrabold text-gray-900"><%= usd(@remaining_cents) %></dd>
+        </div>
+      </dl>
+
+      <% allocated_rows = @categories.filter_map { |c| [c, @allocations[c.id]&.amount_cents.to_i] if @allocations[c.id]&.amount_cents.to_i&.positive? } %>
+
+      <% if allocated_rows.any? %>
+        <div class="relative w-56 h-56 mx-auto my-5">
+          <%= pie_chart allocated_rows.map { |category, cents| [category.name, cents / 100.0] },
+                donut: true,
+                colors: allocated_rows.map { |category, _| category.color },
+                library: { plugins: { legend: { display: false }, tooltip: { enabled: true } }, cutout: "70%" },
+                height: "224px" %>
+          <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <p class="text-2xl font-extrabold text-gray-900"><%= usd(@allocated_cents) %></p>
+            <p class="text-xs text-gray-400">Allocated</p>
+          </div>
+        </div>
+      <% else %>
+        <p class="text-center text-sm text-gray-400 py-10">Allocate a category to see the breakdown.</p>
+      <% end %>
+
+      <ul class="space-y-2.5">
+        <% @categories.each do |category| %>
+          <% cents = @allocations[category.id]&.amount_cents.to_i %>
+          <% percent = @income_cents.zero? ? 0 : ((cents.to_f / @income_cents) * 100).round %>
+          <li class="flex items-center justify-between gap-3 text-sm">
+            <span class="flex items-center gap-2 min-w-0">
+              <span class="w-2 h-2 rounded-full shrink-0" style="background-color: <%= category.color %>"></span>
+              <span class="text-gray-700 truncate"><%= category.name %></span>
+            </span>
+            <span data-legend-amount="<%= category.id %>" class="text-gray-500 whitespace-nowrap"><%= usd(cents) %> (<%= percent %>%)</span>
+          </li>
+        <% end %>
+      </ul>
+
+      <div class="flex items-start gap-2 bg-green-50 border border-green-100 rounded-xl px-4 py-3 mt-5">
+        <svg class="w-4 h-4 text-green-700 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+        <p class="text-xs text-gray-600"><span class="font-bold text-gray-900">Tip:</span> aim to keep Savings at 15–20% of your income.</p>
+      </div>
+    </div>
+  </div>
+<% end %>

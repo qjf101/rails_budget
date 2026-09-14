@@ -29,3 +29,9 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    attributes:
+      transaction:
+        amount_cents: "Amount"
+      goal_contribution:
+        amount_cents: "Allocation"

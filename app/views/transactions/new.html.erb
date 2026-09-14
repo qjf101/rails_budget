@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= render "form_modal", transaction: @transaction, title: "Add Transaction",
+        submit_label: "Save Transaction", url: transactions_path, method: :post %>
+<% end %>

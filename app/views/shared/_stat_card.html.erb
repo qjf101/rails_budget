@@ -14,5 +14,8 @@
     </div>
   </div>
 
-  <%= link_to cta_label, cta_path, class: "block text-center bg-white border border-green-600 text-green-700 font-bold text-sm rounded-lg py-2 hover:bg-green-50" %>
+  <% if local_assigns[:cta_label].present? %>
+    <%= link_to cta_label, cta_path, data: { turbo_frame: local_assigns[:cta_frame] },
+          class: "block text-center bg-white border border-green-600 text-green-700 font-bold text-sm rounded-lg py-2 hover:bg-green-50" %>
+  <% end %>
 </div>

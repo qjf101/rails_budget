@@ -1,0 +1,18 @@
+<%# locals: name, options ([label, value] pairs), selected; optional: all_label (blank option), icon (calendar) %>
+<% with_icon = local_assigns[:icon] %>
+<div class="relative">
+  <select name="<%= name %>"
+          onchange="this.form.requestSubmit()"
+          class="appearance-none rounded-xl border border-gray-200 bg-white <%= with_icon ? "pl-10" : "pl-4" %> pr-10 py-2.5 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 focus:outline-none">
+    <% if local_assigns[:all_label] %>
+      <option value=""><%= all_label %></option>
+    <% end %>
+    <%= options_for_select(options, selected) %>
+  </select>
+
+  <% if with_icon %>
+    <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+  <% end %>
+
+  <svg class="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+</div>

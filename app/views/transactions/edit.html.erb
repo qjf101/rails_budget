@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= render "form_modal", transaction: @transaction, title: "Edit Transaction",
+        submit_label: "Save Changes", url: transaction_path(@transaction), method: :patch %>
+<% end %>

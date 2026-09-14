@@ -1,0 +1,35 @@
+<%# locals: icon (svg markup via `capture`), tone (:green/:red/:amber), label, value, note; optional: note_tone %>
+<% badge_classes = {
+     green: "bg-green-500 text-white",
+     red:   "bg-red-500 text-white",
+     amber: "bg-amber-400 text-white",
+   }.fetch(tone) %>
+<% note_tone = local_assigns.fetch(:note_tone, :muted) %>
+<% note_classes = {
+     up:    "text-green-600 font-semibold",
+     down:  "text-red-500 font-semibold",
+     muted: "text-gray-400",
+   }.fetch(note_tone) %>
+
+<div class="bg-white border border-gray-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-5">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 <%= badge_classes %>">
+      <%= icon %>
+    </div>
+    <p class="text-sm text-gray-500"><%= label %></p>
+  </div>
+
+  <p class="mt-4 text-3xl font-extrabold text-gray-900 tracking-tight"><%= value %></p>
+  <p class="mt-2 flex items-center gap-1 text-xs <%= note_classes %>">
+    <% if note_tone != :muted %>
+      <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <% if note_tone == :up %>
+          <path d="M12 19V5"/><path d="M6 11l6-6 6 6"/>
+        <% else %>
+          <path d="M12 5v14"/><path d="M6 13l6 6 6-6"/>
+        <% end %>
+      </svg>
+    <% end %>
+    <%= note %>
+  </p>
+</div>

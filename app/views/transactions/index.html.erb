@@ -1,0 +1,168 @@
+<% content_for(:page_heading, "Transactions") %>
+<% content_for(:page_icon) do %>
+  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13"/><path d="M14 4l3 3-3 3"/><path d="M20 17H7"/><path d="M10 14l-3 3 3 3"/></svg>
+<% end %>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-6">
+  <% income_icon = capture do %>
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 6.5H9.5a3 3 0 000 6h5a3 3 0 010 6H6"/></svg>
+  <% end %>
+  <%= render "shared/summary_card",
+        icon: income_icon,
+        tone: :green,
+        label: "Total Income",
+        value: usd(@total_income_cents, precision: 2),
+        note: pluralize(@income_days, "income day"),
+        note_tone: :up %>
+
+  <% expense_icon = capture do %>
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg>
+  <% end %>
+  <%= render "shared/summary_card",
+        icon: expense_icon,
+        tone: :red,
+        label: "Total Expenses",
+        value: usd(@total_expense_cents, precision: 2),
+        note: pluralize(@spending_days, "spending day"),
+        note_tone: :down %>
+
+  <% net_icon = capture do %>
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+  <% end %>
+  <%= render "shared/summary_card",
+        icon: net_icon,
+        tone: :amber,
+        label: "Net This Month",
+        value: usd(@net_cents, precision: 2),
+        note: "#{@month.beginning_of_month.strftime("%b %-d")} – #{@month.end_of_month.strftime("%b %-d, %Y")}" %>
+</div>
+
+<%= form_with url: transactions_path, method: :get, class: "mb-6" do %>
+  <%# The type segments are links, so the selects must carry the current type through. %>
+  <%= hidden_field_tag :transaction_type, @filters[:transaction_type] %>
+
+  <div class="bg-white border border-gray-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-4 flex items-center gap-3 flex-wrap">
+    <%= render "filter_select", name: "category_id", all_label: "All Categories",
+          options: @filter_categories.map { |c| [c.name, c.id] }, selected: @filters[:category_id] %>
+
+    <div class="flex items-center bg-gray-100 rounded-xl p-1">
+      <% [["All", nil], ["Income", "income"], ["Expense", "expense"]].each do |label, value| %>
+        <% active = @filters[:transaction_type] == value %>
+        <%= link_to label, transactions_path(@filters.merge(transaction_type: value).compact_blank),
+              class: "px-4 py-1.5 rounded-lg text-sm font-semibold #{active ? "bg-green-800 text-white" : "text-gray-500 hover:text-gray-700"}" %>
+      <% end %>
+    </div>
+
+    <%= render "filter_select", name: "range", options: @range_options, selected: @filters[:range], icon: true %>
+  </div>
+<% end %>
+
+<div class="bg-white border border-gray-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-6">
+  <div class="flex items-center justify-between gap-4 flex-wrap mb-4">
+    <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">All Transactions</h2>
+
+    <%= link_to new_transaction_path, data: { turbo_frame: "modal" },
+          class: "inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-bold text-sm rounded-lg px-4 py-2.5 shrink-0" do %>
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Transaction
+    <% end %>
+  </div>
+
+  <% if @transactions.any? %>
+    <%# No overflow wrapper here: it would clip the row actions menu, and the
+        responsive columns below mean the table never needs to scroll sideways. %>
+    <div>
+      <%# Narrow screens shed Type then Date rather than scrolling sideways; the
+          date reappears beside the category name below md. %>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-200 text-left text-gray-400 text-xs uppercase tracking-wider">
+            <%# Category absorbs the slack; the rest hold a share so they stay
+                spread out instead of collapsing to content width on the right. %>
+            <th class="font-medium pb-3 w-[44%]">Category</th>
+            <th class="font-medium pb-3 hidden md:table-cell w-[19%]">Date</th>
+            <th class="font-medium pb-3 hidden lg:table-cell w-[18%]">Type</th>
+            <th class="font-medium pb-3 text-right w-[19%]">Amount</th>
+            <th class="pb-3 w-10"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @transactions.each_with_index do |transaction, index| %>
+            <tr class="border-b border-gray-100 last:border-0">
+              <td class="py-3 pr-3 sm:pr-4 max-w-0">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                       style="<%= category_badge_style(transaction.category&.color) %>">
+                    <%= icon_svg(transaction.category&.icon || "more-horizontal", class_name: "w-4 h-4") %>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-semibold text-gray-900 truncate"><%= transaction.description.presence || transaction.category&.name || "Uncategorized" %></p>
+                    <p class="text-xs text-gray-400 truncate">
+                      <%= transaction.category&.name || "Uncategorized" %>
+                      <span class="md:hidden">· <%= transaction.date.strftime("%b %-d") %></span>
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3 pr-4 text-gray-500 whitespace-nowrap hidden md:table-cell"><%= transaction.date.strftime("%b %-d, %Y") %></td>
+              <td class="py-3 pr-4 hidden lg:table-cell">
+                <span class="inline-flex items-center gap-1.5 text-gray-500">
+                  <span class="w-1.5 h-1.5 rounded-full <%= transaction.income? ? "bg-green-500" : "bg-red-500" %>"></span>
+                  <%= transaction.transaction_type.capitalize %>
+                </span>
+              </td>
+              <td class="py-3 text-right font-bold whitespace-nowrap <%= transaction.income? ? "text-green-600" : "text-red-500" %>">
+                <%= transaction.income? ? "+" : "−" %><%= usd(transaction.amount_cents, precision: 2) %>
+              </td>
+              <td class="py-3 pl-3 text-right">
+                <div class="relative inline-block" data-controller="dropdown" data-action="click@window->dropdown#hide">
+                  <button type="button" data-action="dropdown#toggle" class="text-gray-300 hover:text-gray-600 p-1 rounded-md cursor-pointer" aria-label="Transaction actions">
+                    <svg class="w-4 h-4 pointer-events-none" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+                  </button>
+                  <%# Open upward near the end of the list, but only where there are
+                      rows above to open into — a short list stays downward. %>
+                  <% opens_up = index >= 2 && index >= @transactions.size - 2 %>
+                  <div data-dropdown-target="menu"
+                       class="hidden absolute right-0 z-20 w-32 bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-left <%= opens_up ? "bottom-full mb-1" : "top-full mt-1" %>">
+                    <%= link_to "Edit", edit_transaction_path(transaction), data: { turbo_frame: "modal" }, class: "block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50" %>
+                    <%= button_to "Delete", transaction_path(transaction), method: :delete,
+                          form: { data: { turbo_confirm: "Remove this transaction?" } },
+                          class: "block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer" %>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex items-center justify-between gap-4 flex-wrap pt-4 mt-2 border-t border-gray-100">
+      <p class="text-sm text-gray-400">
+        Showing <%= @offset + 1 %>–<%= @offset + @transactions.size %> of <%= pluralize(@transactions_count, "transaction") %>
+      </p>
+
+      <% if @total_pages > 1 %>
+        <% page_link = ->(page) { transactions_path(@filters.merge(page: page)) } %>
+        <nav class="flex items-center gap-1.5">
+          <%= link_to page_link.(@page - 1),
+                class: "w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 #{"pointer-events-none opacity-40" if @page == 1} hover:bg-gray-50" do %>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          <% end %>
+
+          <% (1..@total_pages).each do |page| %>
+            <%= link_to page, page_link.(page),
+                  class: "w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold #{page == @page ? "bg-green-800 text-white" : "text-gray-500 hover:bg-gray-50"}" %>
+          <% end %>
+
+          <%= link_to page_link.(@page + 1),
+                class: "w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 #{"pointer-events-none opacity-40" if @page == @total_pages} hover:bg-gray-50" do %>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          <% end %>
+        </nav>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-center text-gray-400 py-12">No transactions yet.</p>
+  <% end %>
+</div>

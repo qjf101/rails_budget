@@ -27,12 +27,34 @@ class BudgetController < ApplicationController
   end
 
   def calendar
-    month = params[:month].present? ? Date.parse(params[:month]) : Date.current
-    @calendar = MonthlyCalendar.new(current_user, month)
-    @month = month
+    @month = parse_month(params[:month])
+    @calendar = MonthlyCalendar.new(current_user, @month)
+    @month_options = month_options
+
+    @period = MonthlyCalendar::PERIODS.include?(params[:period]) ? params[:period] : "monthly"
+    # Weekly/daily need a day to sit on: today when we're looking at the current
+    # month, otherwise the last day of whichever month is on screen.
+    @anchor = @month == Date.current.beginning_of_month ? Date.current : @month.end_of_month
+    @range = @calendar.range_for(@period, @anchor)
+    @totals = @calendar.totals_for(@range)
+    @top_categories = @calendar.top_categories_for(@range)
+    @insight = BudgetInsight.new(current_user).call
   end
 
   private
+
+  def parse_month(value)
+    value.present? ? Date.parse(value).beginning_of_month : Date.current.beginning_of_month
+  rescue Date::Error
+    Date.current.beginning_of_month
+  end
+
+  def month_options
+    12.downto(0).map do |ago|
+      month = ago.months.ago(Date.current).beginning_of_month
+      [month.strftime("%B %Y"), month.to_s]
+    end
+  end
 
   # Inputs are dollars; the column is cents. to_f rather than to_i so "1234.50" survives.
   def to_cents(amount)

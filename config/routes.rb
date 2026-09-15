@@ -5,9 +5,11 @@ Rails.application.routes.draw do
 
   resources :transactions, except: [:show]
   resources :goals, except: [:show] do
-    resources :contributions, only: [:create, :destroy], controller: "goal_contributions"
+    resources :contributions, only: [:new, :create, :destroy], controller: "goal_contributions"
   end
-  post "goal_transfers", to: "goal_transfers#create"
+
+  resources :contributions, only: [:new, :create], controller: "goal_contributions"
+  resources :goal_transfers, only: [:new, :create]
 
   get  "budget", to: "budget#allocate"
   get  "budget/calendar", to: "budget#calendar"

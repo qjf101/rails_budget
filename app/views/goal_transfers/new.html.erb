@@ -1,0 +1,53 @@
+<% source_label = @source&.name || "General Savings" %>
+<% available = @source ? @source.current_cents : current_user.savings.unallocated_cents %>
+<% field = "w-full rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600" %>
+<% no_spinner = "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" %>
+<%# Everything except the source is a valid destination, General Savings included. %>
+<% destinations = [["General Savings", ""]] + @goals.reject { |g| g == @source }.map { |g| [g.name, g.id] } %>
+
+<%= turbo_frame_tag "modal" do %>
+  <div class="fixed inset-0 z-50 bg-black/30 flex items-start justify-center p-4 overflow-y-auto"
+       data-controller="modal"
+       data-action="click->modal#closeOnBackdrop keydown@window->modal#closeOnEscape">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm my-10">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900"><%= @source ? "Transfer" : "Assign to Goal" %></h2>
+          <p class="text-xs text-gray-400 mt-0.5">From <%= source_label %> · <%= usd(available) %> available</p>
+        </div>
+        <button type="button" data-action="modal#close" class="text-gray-400 hover:text-gray-600 cursor-pointer" aria-label="Close">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <%= form_with url: goal_transfers_path, method: :post do %>
+        <%= hidden_field_tag :from_goal_id, @source&.id %>
+
+        <div class="p-6 space-y-4">
+          <div>
+            <%= label_tag :amount, "Amount", class: "block text-xs font-bold text-gray-700 mb-1.5" %>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
+              <%= number_field_tag :amount, nil, step: "0.01", min: 0, placeholder: "0.00", autofocus: true,
+                    class: "#{field} pl-7 #{no_spinner}" %>
+            </div>
+          </div>
+
+          <div>
+            <%= label_tag :to_goal_id, "Destination", class: "block text-xs font-bold text-gray-700 mb-1.5" %>
+            <div class="relative">
+              <%= select_tag :to_goal_id, options_for_select(destinations),
+                    class: "#{field} appearance-none pr-10 cursor-pointer" %>
+              <svg class="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+          <button type="button" data-action="modal#close" class="rounded-lg border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer">Cancel</button>
+          <%= submit_tag "Transfer", class: "rounded-lg bg-green-800 hover:bg-green-900 px-5 py-2.5 text-sm font-bold text-white cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

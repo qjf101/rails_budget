@@ -2,7 +2,9 @@ class Goal < ApplicationRecord
   include Iconable
 
   belongs_to :savings
-  has_many :goal_contributions, dependent: :destroy
+  # Deleting a goal must not delete the money saved into it: the contributions
+  # fall back to General Savings (goal_id nil), keeping the savings ledger balanced.
+  has_many :goal_contributions, dependent: :nullify
   validates :name, :target_cents, presence: true
 
   def current_cents

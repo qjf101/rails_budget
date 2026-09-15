@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= render "form_modal", goal: @goal, title: "New Goal",
+        submit_label: "Create Goal", url: goals_path, method: :post %>
+<% end %>

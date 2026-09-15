@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= render "form_modal", goal: @goal, title: "Edit Goal",
+        submit_label: "Save Changes", url: goal_path(@goal), method: :patch %>
+<% end %>

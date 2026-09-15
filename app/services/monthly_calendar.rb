@@ -6,8 +6,6 @@ class MonthlyCalendar
     def activity? = income_count.positive? || expense_count.positive?
   end
 
-  CategorySpend = Struct.new(:name, :color, :icon, :cents, :percent, keyword_init: true)
-
   def initialize(user, month = Date.current)
     @user = user
     @month = month.beginning_of_month
@@ -80,18 +78,7 @@ class MonthlyCalendar
   end
 
   def top_categories_for(range, limit: 5)
-    totals = @user.transactions.expense.where(date: range)
-                  .joins(:category)
-                  .group("categories.name", "categories.color", "categories.icon")
-                  .sum(:amount_cents)
-    spent = totals.values.sum
-
-    totals.sort_by { |_, cents| -cents }.first(limit).map do |(name, color, icon), cents|
-      CategorySpend.new(
-        name: name, color: color, icon: icon, cents: cents,
-        percent: spent.zero? ? 0 : ((cents.to_f / spent) * 100).round
-      )
-    end
+    CategorySpending.for(@user, range, limit: limit)
   end
 
   private

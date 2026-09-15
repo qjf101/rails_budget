@@ -139,7 +139,7 @@
                 <div class="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
                   <div class="h-full rounded-full" style="width: <%= [row.percent, 100].min %>%; background-color: <%= row.color || "#6b7280" %>"></div>
                 </div>
-                <span class="text-[11px] text-gray-400 whitespace-nowrap"><%= row.percent %>%</span>
+                <span class="text-[11px] text-gray-400 whitespace-nowrap"><%= row.percent.round %>%</span>
               </div>
             </div>
           </li>

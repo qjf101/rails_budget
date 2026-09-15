@@ -1,0 +1,38 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="fixed inset-0 z-50 bg-black/30 flex items-start justify-center p-4 overflow-y-auto"
+       data-controller="modal"
+       data-action="click->modal#closeOnBackdrop keydown@window->modal#closeOnEscape">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md my-10">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h2 class="text-lg font-bold text-red-600">Delete Account</h2>
+        <button type="button" data-action="modal#close" class="text-gray-400 hover:text-gray-600 cursor-pointer" aria-label="Close">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <%= form_with url: settings_account_path, method: :delete do %>
+        <div class="p-6 space-y-4">
+          <% if @error %>
+            <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700"><%= @error %></div>
+          <% end %>
+
+          <p class="text-sm text-gray-600">
+            This permanently deletes <span class="font-semibold text-gray-900"><%= @user.email %></span>
+            and everything in it — transactions, budgets, categories and goals. It cannot be undone.
+          </p>
+
+          <div>
+            <%= label_tag :current_password, "Enter your password to confirm", class: "block text-xs font-bold text-gray-700 mb-1.5" %>
+            <%= password_field_tag :current_password, nil, autocomplete: "current-password", autofocus: true,
+                  class: "w-full rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500" %>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+          <button type="button" data-action="modal#close" class="rounded-lg border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer">Cancel</button>
+          <%= submit_tag "Delete my account", class: "rounded-lg bg-red-600 hover:bg-red-700 px-5 py-2.5 text-sm font-bold text-white cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

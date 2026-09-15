@@ -1,0 +1,12 @@
+<%# locals: user, size (tailwind w/h classes), text (tailwind font size) %>
+<div class="<%= size %> rounded-full overflow-hidden bg-green-100 text-green-800 flex items-center justify-center font-bold shrink-0 <%= local_assigns.fetch(:text, "text-sm") %>"
+     data-file-preview-target="container">
+  <%# blob.persisted? matters on a failed save: the rejected file is still attached
+      in memory, and image_tag on an unsaved blob raises "Cannot get a signed_id". %>
+  <% if user.avatar.attached? && user.avatar.blob&.persisted? %>
+    <%# 200px covers the largest use (64px) at 2x; processed on first request. %>
+    <%= image_tag user.avatar.variant(resize_to_fill: [200, 200]), class: "w-full h-full object-cover", alt: user.name.presence || user.email %>
+  <% else %>
+    <span data-file-preview-target="initial"><%= user.initial %></span>
+  <% end %>
+</div>

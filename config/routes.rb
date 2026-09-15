@@ -16,7 +16,12 @@ Rails.application.routes.draw do
   patch "budget", to: "budget#update_allocations"
 
   get "reports", to: "reports#index"
-  get "settings", to: "settings#edit"
+  get    "settings",                to: "settings#edit"
+  patch  "settings/profile",        to: "settings#update_profile",  as: :settings_profile
+  patch  "settings/password",       to: "settings#update_password", as: :settings_password
+  get    "settings/delete_account", to: "settings#confirm_delete",  as: :confirm_delete_account
+  delete "settings/avatar",         to: "settings#destroy_avatar",  as: :settings_avatar
+  delete "settings/account",        to: "settings#destroy_account", as: :settings_account
   resources :categories, only: [:index, :new, :create, :edit, :update, :destroy]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

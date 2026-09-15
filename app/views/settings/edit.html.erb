@@ -1,0 +1,187 @@
+<% content_for(:page_heading, "Settings") %>
+<% content_for(:page_icon) do %>
+  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1A1.7 1.7 0 008.9 19a1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1A1.7 1.7 0 004.6 8.9a1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+<% end %>
+
+<% card = "bg-white border border-gray-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-6" %>
+<% field = "w-full rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600" %>
+<% label_classes = "block text-xs font-bold text-gray-700 mb-1.5" %>
+<% primary = "bg-green-700 hover:bg-green-800 text-white font-bold text-sm rounded-lg px-5 py-2.5 cursor-pointer" %>
+
+<div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-5">
+  <div class="space-y-5">
+    <div class="<%= card %>">
+      <h2 class="text-lg font-bold text-gray-900">Profile</h2>
+      <p class="text-sm text-gray-400 mt-0.5 mb-5">Your personal information</p>
+
+      <%= form_with model: @user, url: settings_profile_path, method: :patch, data: { controller: "file-preview" } do |form| %>
+        <div class="flex items-center gap-4 mb-5">
+          <%= render "shared/avatar", user: @user, size: "w-16 h-16", text: "text-xl" %>
+
+          <div class="min-w-0">
+            <label class="inline-block bg-white border border-gray-200 text-gray-700 font-bold text-sm rounded-lg px-4 py-2 hover:bg-gray-50 cursor-pointer">
+              Change Photo
+              <%= form.file_field :avatar, accept: "image/jpeg,image/png,image/webp", class: "sr-only",
+                    data: { file_preview_target: "input", action: "change->file-preview#preview" } %>
+            </label>
+            <p class="text-xs text-gray-400 mt-1.5" data-file-preview-target="filename">JPG, PNG or WebP, at least 200×200px</p>
+
+            <% if @user.avatar.attached? %>
+              <%= link_to "Remove photo", settings_avatar_path, data: { turbo_method: :delete, turbo_confirm: "Remove your profile photo?" },
+                    class: "inline-block text-xs font-semibold text-red-600 hover:text-red-700 mt-1.5" %>
+            <% end %>
+          </div>
+        </div>
+
+        <% if @user.errors.any? %>
+          <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 mb-4">
+            <ul class="list-disc list-inside space-y-0.5">
+              <% @user.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+          <div>
+            <%= form.label :name, "Full Name", class: label_classes %>
+            <%= form.text_field :name, placeholder: "Your name", class: field %>
+          </div>
+          <div>
+            <%= form.label :email, "Email Address", class: label_classes %>
+            <%= form.email_field :email, class: field %>
+          </div>
+        </div>
+
+        <%= form.submit "Save Changes", class: primary %>
+      <% end %>
+    </div>
+
+    <div class="<%= card %>">
+      <h2 class="text-lg font-bold text-gray-900">Security</h2>
+      <p class="text-sm text-gray-400 mt-0.5 mb-5">Update your password</p>
+
+      <%= form_with model: @user, url: settings_password_path, method: :patch do |form| %>
+        <div class="mb-4">
+          <%= form.label :current_password, "Current Password", class: label_classes %>
+          <%= form.password_field :current_password, autocomplete: "current-password", class: field %>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+          <div>
+            <%= form.label :password, "New Password", class: label_classes %>
+            <%= form.password_field :password, autocomplete: "new-password", class: field %>
+          </div>
+          <div>
+            <%= form.label :password_confirmation, "Confirm New Password", class: label_classes %>
+            <%= form.password_field :password_confirmation, autocomplete: "new-password", class: field %>
+          </div>
+        </div>
+
+        <%= form.submit "Update Password", class: primary %>
+      <% end %>
+    </div>
+
+    <div class="<%= card %>">
+      <h2 class="text-lg font-bold text-gray-900">Transaction Data Source</h2>
+      <p class="text-sm text-gray-400 mt-0.5 mb-5">Choose how transactions get into budget app</p>
+
+      <div class="border-2 border-green-600 bg-green-50/40 rounded-xl p-4 flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-green-600 text-white flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-bold text-gray-900">Manual Entry</p>
+          <p class="text-xs text-gray-400 mt-0.5">Add and categorize transactions yourself</p>
+        </div>
+        <span class="inline-flex items-center gap-1 bg-green-600 text-white text-xs font-bold rounded-full px-2.5 py-1 shrink-0">
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Active
+        </span>
+      </div>
+
+      <div class="border border-gray-200 rounded-xl p-4 flex items-center gap-3 opacity-60">
+        <div class="w-10 h-10 rounded-xl bg-gray-100 text-gray-400 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-bold text-gray-900">Connect a Bank</p>
+          <p class="text-xs text-gray-400 mt-0.5">Automatically sync transactions from your bank</p>
+        </div>
+        <span class="bg-gray-100 text-gray-500 text-xs font-bold rounded-full px-2.5 py-1 shrink-0 whitespace-nowrap">Coming Soon</span>
+      </div>
+    </div>
+
+    <div class="<%= card %>">
+      <h2 class="text-lg font-bold text-gray-900">Notifications</h2>
+      <p class="text-sm text-gray-400 mt-0.5 mb-2">Choose what you want to hear about</p>
+
+      <div class="divide-y divide-gray-100">
+        <%= render "toggle", title: "Budget alerts", description: "Get notified when a category goes over budget", checked: true %>
+        <%= render "toggle", title: "Goal milestones", description: "Celebrate when you hit 25%, 50%, 75%, and 100% of a goal", checked: true %>
+        <%= render "toggle", title: "Weekly summary email", description: "A recap of income, spending, and progress every Monday", checked: false %>
+      </div>
+    </div>
+
+    <div class="bg-white border border-red-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-6">
+      <h2 class="text-lg font-bold text-red-600 mb-4">Danger Zone</h2>
+
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div class="min-w-0">
+          <p class="text-sm font-bold text-gray-900">Delete Account</p>
+          <p class="text-xs text-gray-400 mt-0.5 max-w-md">Permanently deletes your account and all associated data. This cannot be undone.</p>
+        </div>
+        <%= link_to "Delete Account", confirm_delete_account_path, data: { turbo_frame: "modal" },
+              class: "bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg px-5 py-2.5 shrink-0" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-5">
+    <div class="<%= card %>">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-gray-900">Your Plan</h2>
+        <span class="bg-gray-100 text-gray-600 text-xs font-bold rounded-full px-2.5 py-1">Basic</span>
+      </div>
+      <p class="text-sm text-gray-400 mt-0.5 mb-4">Free, forever</p>
+
+      <ul class="space-y-2.5 mb-5">
+        <% ["Unlimited manual transactions", "6 months of reports history", "Email support"].each do |feature| %>
+          <li class="flex items-start gap-2 text-sm text-gray-700">
+            <svg class="w-4 h-4 text-green-600 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <%= feature %>
+          </li>
+        <% end %>
+      </ul>
+
+      <p class="text-xs font-bold text-gray-400 tracking-wider mb-2.5">PLUS INCLUDES</p>
+      <ul class="space-y-2.5 mb-5">
+        <% ["Unlimited connected banks", "Unlimited history", "Priority support"].each do |feature| %>
+          <li class="flex items-start gap-2 text-sm text-gray-400">
+            <svg class="w-4 h-4 text-gray-300 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <%= feature %>
+          </li>
+        <% end %>
+      </ul>
+
+      <button type="button" class="w-full <%= primary %>">Upgrade to Plus</button>
+    </div>
+
+    <div class="<%= card %>">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">Account</h2>
+      <dl class="space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-sm text-gray-500">Member since</dt>
+          <dd class="text-sm font-semibold text-gray-900"><%= @user.created_at.strftime("%b %Y") %></dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-sm text-gray-500">Transactions logged</dt>
+          <dd class="text-sm font-semibold text-gray-900"><%= @user.transactions.count %></dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-sm text-gray-500">Categories</dt>
+          <dd class="text-sm font-semibold text-gray-900"><%= @user.categories.count %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+YOUR WEEK IN REVIEW
+<%= @summary.range.first.strftime("%b %-d") %> - <%= @summary.range.last.strftime("%b %-d, %Y") %>
+
+<% if @summary.any_activity? -%>
+Income: <%= usd(@summary.income_cents) %>
+Spent:  <%= usd(@summary.expense_cents) %>
+Net:    <%= usd(@summary.net_cents) %>
+<%= pluralize(@summary.transaction_count, "transaction") %> this week.
+<% if @summary.over_budget.any? -%>
+
+OVER BUDGET
+<% @summary.over_budget.each do |row| -%>
+- <%= row.category.name %>: <%= usd(row.spent_cents) %> of <%= usd(row.allocated_cents) %> (<%= row.percent %>%)
+<% end -%>
+<% end -%>
+<% if @summary.top_categories.any? -%>
+
+WHERE IT WENT
+<% @summary.top_categories.each do |row| -%>
+- <%= row.name %>: <%= usd(row.cents) %>
+<% end -%>
+<% end -%>
+<% else -%>
+No transactions logged this week.
+<% end -%>
+<% if @summary.goals.any? -%>
+
+GOALS
+<% @summary.goals.each do |goal| -%>
+- <%= goal.name %>: <%= usd(goal.current_cents) %> of <%= usd(goal.target_cents) %> (<%= goal.percent_complete %>%)
+<% end -%>
+<% end -%>
+
+Open budget app: <%= root_url %>
+Change your notification settings: <%= settings_url %>

@@ -115,11 +115,18 @@
       <h2 class="text-lg font-bold text-gray-900">Notifications</h2>
       <p class="text-sm text-gray-400 mt-0.5 mb-2">Choose what you want to hear about</p>
 
-      <div class="divide-y divide-gray-100">
-        <%= render "toggle", title: "Budget alerts", description: "Get notified when a category goes over budget", checked: true %>
-        <%= render "toggle", title: "Goal milestones", description: "Celebrate when you hit 25%, 50%, 75%, and 100% of a goal", checked: true %>
-        <%= render "toggle", title: "Weekly summary email", description: "A recap of income, spending, and progress every Monday", checked: false %>
-      </div>
+      <%= form_with model: @user, url: settings_notifications_path, method: :patch do |form| %>
+        <div class="divide-y divide-gray-100">
+          <%# fields_for emits the hidden id field for each persisted record itself. %>
+          <%= form.fields_for :notification_preferences, @notification_preferences do |preference_form| %>
+            <%= render "toggle", form: preference_form, preference: preference_form.object %>
+          <% end %>
+        </div>
+
+        <div class="pt-4 mt-1 border-t border-gray-100">
+          <%= form.submit "Save Preferences", class: primary %>
+        </div>
+      <% end %>
     </div>
 
     <div class="bg-white border border-red-200 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] p-6">

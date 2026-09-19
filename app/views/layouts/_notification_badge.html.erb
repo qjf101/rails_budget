@@ -1,0 +1,8 @@
+<%# Always renders the wrapper, even at zero, so a turbo-stream can target it. %>
+<span id="notifications_badge">
+  <% if unread_notifications_count.positive? %>
+    <span class="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center pointer-events-none">
+      <%= unread_notifications_count > 9 ? "9+" : unread_notifications_count %>
+    </span>
+  <% end %>
+</span>

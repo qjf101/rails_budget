@@ -32,7 +32,21 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  # MailCatcher runs as a separate process (gem install mailcatcher; mailcatcher).
+  # It accepts anything on 1025 and shows it at http://127.0.0.1:1080 — no real mail
+  # leaves the machine, but delivery is exercised for real rather than stubbed.
+  # :async (the default) cannot run recurring jobs at all — config/recurring.yml is
+  # a Solid Queue feature — and drops queued work on restart. Run a worker with
+  # `bin/jobs`, or `SOLID_QUEUE_IN_PUMA=1 bin/rails server` to fold it into Puma.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = { address: "127.0.0.1", port: 1025 }
+  config.action_mailer.perform_deliveries = true
+  # true, so a broken template or a stopped MailCatcher fails loudly instead of
+  # silently swallowing the mail.
+  config.action_mailer.raise_delivery_errors = true
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false

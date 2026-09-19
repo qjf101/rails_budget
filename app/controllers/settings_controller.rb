@@ -1,6 +1,9 @@
 class SettingsController < ApplicationController
   def edit
     @user = current_user
+    # Ordered by the catalogue rather than by id, so the list stays stable.
+    @notification_preferences = current_user.notification_preferences
+      .sort_by { |preference| NotificationPreference::KEYS.index(preference.key) }
   end
 
   def update_profile
@@ -19,6 +22,17 @@ class SettingsController < ApplicationController
       bypass_sign_in(@user) # Changing the password rotates the session token.
       redirect_to settings_path, notice: "Password updated.", status: :see_other
     else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def update_notifications
+    # Nested ids are looked up *within* current_user's association, so a forged id
+    # belonging to another user raises RecordNotFound rather than updating theirs.
+    if current_user.update(notification_params)
+      redirect_to settings_path, notice: "Notification preferences saved.", status: :see_other
+    else
+      edit
       render :edit, status: :unprocessable_entity
     end
   end
@@ -46,6 +60,10 @@ class SettingsController < ApplicationController
   end
 
   private
+
+  def notification_params
+    params.require(:user).permit(notification_preferences_attributes: [:id, :enabled])
+  end
 
   def profile_params
     params.require(:user).permit(:name, :email, :avatar)

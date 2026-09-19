@@ -1,0 +1,87 @@
+<%# Email HTML is not web HTML: no flexbox or grid, styles must be inline, and
+    tables do the layout. Clients strip <style> blocks and external CSS. %>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f9;padding:24px 0;font-family:Helvetica,Arial,sans-serif;">
+  <tr><td align="center">
+    <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;">
+      <tr><td style="padding:24px 28px 8px;">
+        <p style="margin:0;font-size:12px;font-weight:bold;color:#15803d;letter-spacing:.06em;">BUDGET APP</p>
+        <h1 style="margin:8px 0 2px;font-size:22px;color:#111827;">Your week in review</h1>
+        <p style="margin:0;font-size:13px;color:#9ca3af;">
+          <%= @summary.range.first.strftime("%b %-d") %> – <%= @summary.range.last.strftime("%b %-d, %Y") %>
+        </p>
+      </td></tr>
+
+      <% if @summary.any_activity? %>
+        <tr><td style="padding:16px 28px 0;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <% [["Income", @summary.income_cents, "#16a34a"], ["Spent", @summary.expense_cents, "#ef4444"],
+                  ["Net", @summary.net_cents, @summary.net_cents.negative? ? "#ef4444" : "#111827"]].each do |label, cents, color| %>
+                <td width="33%" style="padding:12px 0;">
+                  <p style="margin:0 0 4px;font-size:12px;color:#9ca3af;"><%= label %></p>
+                  <p style="margin:0;font-size:19px;font-weight:bold;color:<%= color %>;"><%= usd(cents) %></p>
+                </td>
+              <% end %>
+            </tr>
+          </table>
+          <p style="margin:4px 0 0;font-size:12px;color:#9ca3af;"><%= pluralize(@summary.transaction_count, "transaction") %> this week</p>
+        </td></tr>
+
+        <% if @summary.over_budget.any? %>
+          <tr><td style="padding:20px 28px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;">
+              <tr><td style="padding:12px 14px;">
+                <p style="margin:0 0 6px;font-size:13px;font-weight:bold;color:#b91c1c;">Over budget</p>
+                <% @summary.over_budget.each do |row| %>
+                  <p style="margin:0;font-size:13px;color:#7f1d1d;">
+                    <%= row.category.name %> — <%= usd(row.spent_cents) %> of <%= usd(row.allocated_cents) %> (<%= row.percent %>%)
+                  </p>
+                <% end %>
+              </td></tr>
+            </table>
+          </td></tr>
+        <% end %>
+
+        <% if @summary.top_categories.any? %>
+          <tr><td style="padding:20px 28px 0;">
+            <p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#111827;">Where it went</p>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <% @summary.top_categories.each do |row| %>
+                <tr>
+                  <td style="padding:5px 0;font-size:13px;color:#374151;">
+                    <span style="display:inline-block;width:8px;height:8px;border-radius:4px;background:<%= row.color %>;"></span>
+                    <%= row.name %>
+                  </td>
+                  <td align="right" style="padding:5px 0;font-size:13px;font-weight:bold;color:#111827;"><%= usd(row.cents) %></td>
+                </tr>
+              <% end %>
+            </table>
+          </td></tr>
+        <% end %>
+      <% else %>
+        <tr><td style="padding:20px 28px 0;">
+          <p style="margin:0;font-size:14px;color:#6b7280;">No transactions logged this week.</p>
+        </td></tr>
+      <% end %>
+
+      <% if @summary.goals.any? %>
+        <tr><td style="padding:20px 28px 0;">
+          <p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#111827;">Goals</p>
+          <% @summary.goals.each do |goal| %>
+            <p style="margin:0 0 4px;font-size:13px;color:#374151;">
+              <%= goal.name %> — <%= usd(goal.current_cents) %> of <%= usd(goal.target_cents) %> (<%= goal.percent_complete %>%)
+            </p>
+          <% end %>
+        </td></tr>
+      <% end %>
+
+      <tr><td style="padding:24px 28px 28px;">
+        <a href="<%= root_url %>" style="display:inline-block;background:#15803d;color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:11px 20px;border-radius:8px;">Open budget app</a>
+        <p style="margin:18px 0 0;font-size:11px;color:#9ca3af;">
+          You're getting this because weekly summaries are on.
+          <a href="<%= settings_url %>" style="color:#6b7280;">Change that in settings</a>.
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>

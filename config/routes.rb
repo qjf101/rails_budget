@@ -15,10 +15,15 @@ Rails.application.routes.draw do
   get  "budget/calendar", to: "budget#calendar"
   patch "budget", to: "budget#update_allocations"
 
+  resources :notifications, only: [:index, :show] do
+    post :read_all, on: :collection
+  end
+
   get "reports", to: "reports#index"
   get    "settings",                to: "settings#edit"
   patch  "settings/profile",        to: "settings#update_profile",  as: :settings_profile
   patch  "settings/password",       to: "settings#update_password", as: :settings_password
+  patch  "settings/notifications",  to: "settings#update_notifications", as: :settings_notifications
   get    "settings/delete_account", to: "settings#confirm_delete",  as: :confirm_delete_account
   delete "settings/avatar",         to: "settings#destroy_avatar",  as: :settings_avatar
   delete "settings/account",        to: "settings#destroy_account", as: :settings_account

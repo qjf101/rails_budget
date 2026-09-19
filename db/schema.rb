@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_15_193116) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_16_085731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -102,6 +102,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_193116) do
     t.index ["savings_id"], name: "index_goals_on_savings_id"
   end
 
+  create_table "notification_preferences", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "enabled", default: true, null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "key"], name: "index_notification_preferences_on_user_id_and_key", unique: true
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "body"
+    t.datetime "created_at", null: false
+    t.string "dedupe_key"
+    t.string "kind", null: false
+    t.datetime "read_at"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.string "url"
+    t.bigint "user_id", null: false
+    t.index ["user_id", "created_at"], name: "index_notifications_on_user_id_and_created_at"
+    t.index ["user_id", "dedupe_key"], name: "index_notifications_on_user_id_and_dedupe_key", unique: true, where: "(dedupe_key IS NOT NULL)"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+    t.index ["user_id"], name: "index_notifications_unread", where: "(read_at IS NULL)"
+  end
+
   create_table "savings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -149,6 +175,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_193116) do
   add_foreign_key "goal_contributions", "savings", column: "savings_id"
   add_foreign_key "goal_contributions", "transactions"
   add_foreign_key "goals", "savings", column: "savings_id"
+  add_foreign_key "notification_preferences", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "savings", "users"
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"

@@ -180,10 +180,13 @@ jobs:
 
       - name: Trust the deploy host
         # Kamal does not set verify_host_key, so Net::SSH defaults to :always and a
-        # runner with an empty known_hosts refuses to connect.
+        # runner with an empty known_hosts refuses to connect. The key is pinned in a
+        # secret rather than scanned here: scanning is trust-on-first-use, and hashed
+        # entries from `ssh-keyscan -H` make net-ssh raise HostKeyMismatch.
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          ssh-keyscan -H 149.28.57.97 >> ~/.ssh/known_hosts
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Restore the master key
         # .kamal/secrets reads config/master.key, which is gitignored and so absent

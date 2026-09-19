@@ -1,0 +1,13 @@
+<% if viewing_demo? %>
+  <div class="shrink-0 bg-amber-100 border-b border-amber-200 px-4 py-2">
+    <div class="flex items-center justify-center gap-2 flex-wrap text-center">
+      <svg class="w-4 h-4 text-amber-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+      <p class="text-xs sm:text-sm text-amber-900">
+        <span class="font-bold">You're viewing a shared demo.</span>
+        Anything you change is public and resets nightly.
+      </p>
+      <%= button_to "Sign out to use your own account", destroy_user_session_path, method: :delete,
+            class: "text-xs sm:text-sm font-bold text-amber-900 underline underline-offset-2 bg-transparent border-0 p-0 cursor-pointer hover:text-amber-950" %>
+    </div>
+  </div>
+<% end %>

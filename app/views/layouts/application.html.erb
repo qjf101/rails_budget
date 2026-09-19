@@ -5,17 +5,21 @@
   </head>
 
   <body class="bg-gray-50">
-    <div class="flex h-screen overflow-hidden" data-controller="sidebar">
-      <div data-sidebar-target="backdrop" data-action="click->sidebar#close" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
+    <div class="flex flex-col h-screen overflow-hidden">
+      <%= render "layouts/demo_banner" %>
 
-      <%= render "layouts/sidebar" %>
+      <div class="flex flex-1 min-h-0" data-controller="sidebar">
+        <div data-sidebar-target="backdrop" data-action="click->sidebar#close" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
 
-      <div class="flex-1 flex flex-col min-w-0 min-h-0">
-        <%= render "layouts/topbar" %>
+        <%= render "layouts/sidebar" %>
 
-        <main class="p-4 sm:p-6 lg:p-8 bg-white flex-1 overflow-y-auto">
-          <%= yield %>
-        </main>
+        <div class="flex-1 flex flex-col min-w-0 min-h-0">
+          <%= render "layouts/topbar" %>
+
+          <main class="p-4 sm:p-6 lg:p-8 bg-white flex-1 overflow-y-auto">
+            <%= yield %>
+          </main>
+        </div>
       </div>
     </div>
 

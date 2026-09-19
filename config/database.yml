@@ -95,6 +95,10 @@ production:
   primary: &primary_production
     <<: *default
     database: rails_budget_production
+    # Kamal names accessory containers <service>-<accessory> and joins them to its
+    # own Docker network, so this is how the app reaches the db accessory. Override
+    # DATABASE_HOST if you ever move to a managed Postgres.
+    host: <%= ENV.fetch("DATABASE_HOST", "rails_budget-db") %>
     username: rails_budget
     password: <%= ENV["RAILS_BUDGET_DATABASE_PASSWORD"] %>
   cache:

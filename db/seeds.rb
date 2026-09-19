@@ -1,4 +1,4 @@
-user = User.find_or_create_by!(email: "demo@example.com") do |u|
+user = User.find_or_create_by!(email: ENV.fetch("DEMO_USER_EMAIL", "demo@example.com")) do |u|
   u.password = "password123"
 end
 

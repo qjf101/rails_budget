@@ -10,6 +10,11 @@
 #     schedule: at 5am every day
 
 development:
+  reset_demo_data:
+    class: ResetDemoDataJob
+    queue: default
+    schedule: every day at 4am
+
   purge_read_notifications:
     class: PurgeReadNotificationsJob
     queue: default
@@ -21,6 +26,11 @@ development:
     schedule: every monday at 8am
 
 production:
+  reset_demo_data:
+    class: ResetDemoDataJob
+    queue: default
+    schedule: every day at 4am
+
   purge_read_notifications:
     class: PurgeReadNotificationsJob
     queue: default

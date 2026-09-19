@@ -19,6 +19,7 @@ class GoalTransfersController < ApplicationController
       savings.goal_contributions.create!(goal: destination, amount_cents: amount_cents, note: "Transferred from #{label_for(source)}")
     end
 
+    sweep_notifications
     flash[:notice] = "Transferred to #{label_for(destination)}."
     respond_to do |format|
       format.turbo_stream { render turbo_stream: turbo_stream.action(:refresh, "") }

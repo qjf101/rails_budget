@@ -27,6 +27,8 @@ class GoalsController < ApplicationController
 
   def update
     if @goal.update(goal_params)
+      # Lowering a target can cross a milestone with no new contribution.
+      sweep_notifications
       close_modal_and_reload("Goal updated.")
     else
       render :edit, status: :unprocessable_entity

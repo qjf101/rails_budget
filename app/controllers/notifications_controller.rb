@@ -1,5 +1,6 @@
 class NotificationsController < ApplicationController
   LIMIT = 20
+
   # Rendered into a lazy turbo frame, so this only runs when the bell is opened.
   # Opening the bell is what marks things read: routing each click through a
   # redirect made Turbo re-render the destination and killed any <canvas> on it.
@@ -21,10 +22,5 @@ class NotificationsController < ApplicationController
     notification = current_user.notifications.find(params[:id])
     notification.mark_read!
     redirect_to(notification.url.presence || root_path, allow_other_host: false)
-  end
-
-  def read_all
-    current_user.notifications.unread.update_all(read_at: Time.current)
-    redirect_back fallback_location: root_path, status: :see_other
   end
 end

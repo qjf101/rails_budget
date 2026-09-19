@@ -15,9 +15,7 @@ Rails.application.routes.draw do
   get  "budget/calendar", to: "budget#calendar"
   patch "budget", to: "budget#update_allocations"
 
-  resources :notifications, only: [:index, :show] do
-    post :read_all, on: :collection
-  end
+  resources :notifications, only: [:index, :show]
 
   get "reports", to: "reports#index"
   get    "settings",                to: "settings#edit"

@@ -13,3 +13,8 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
   end
 end
+
+class ActionDispatch::IntegrationTest
+  # sign_in / sign_out for request specs.
+  include Devise::Test::IntegrationHelpers
+end

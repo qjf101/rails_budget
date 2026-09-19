@@ -23,6 +23,8 @@ class BudgetController < ApplicationController
       allocation.update!(amount_cents: to_cents(amount))
     end
 
+    # Lowering an allocation can put a category over budget without any new spending.
+    sweep_notifications
     redirect_to budget_path, notice: "Budget saved.", status: :see_other
   end
 

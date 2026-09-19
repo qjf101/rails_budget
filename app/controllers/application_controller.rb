@@ -17,6 +17,13 @@ class ApplicationController < ActionController::Base
     devise_controller? ? "devise" : "application"
   end
 
+  # Call after anything that can change budget or goal standing. Any write path
+  # that forgets this silently produces no notifications — the cost of an explicit
+  # call site over a model callback that would also fire during seeding.
+  def sweep_notifications
+    NotificationSweeper.new(current_user).call
+  end
+
   # Runs on every page because the bell lives in the layout. Memoised so a render
   # that touches it twice still costs one query, and backed by a partial index.
   def unread_notifications_count

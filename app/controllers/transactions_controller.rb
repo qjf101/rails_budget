@@ -54,7 +54,7 @@ class TransactionsController < ApplicationController
     sync_goal_split
 
     if @transaction.save
-      NotificationSweeper.new(current_user).call
+      sweep_notifications
       close_modal_and_reload("Transaction added.")
     else
       load_form_data
@@ -71,7 +71,7 @@ class TransactionsController < ApplicationController
     sync_goal_split
 
     if @transaction.save
-      NotificationSweeper.new(current_user).call
+      sweep_notifications
       close_modal_and_reload("Transaction updated.")
     else
       load_form_data

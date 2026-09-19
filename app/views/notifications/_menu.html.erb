@@ -1,13 +1,7 @@
 <%# locals: notifications. Rendered into the lazy frame when the bell is opened. %>
 <%= turbo_frame_tag "notifications_menu" do %>
-  <div class="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-gray-100">
+  <div class="px-4 py-2.5 border-b border-gray-100">
     <p class="text-sm font-bold text-gray-900">Notifications</p>
-    <% if notifications.any? { |n| !n.read? } %>
-      <%# _top: without it these navigate the dropdown frame instead of the page. %>
-      <%= button_to "Mark all read", read_all_notifications_path,
-            form: { data: { turbo_frame: "_top" } },
-            class: "text-xs font-semibold text-green-700 hover:text-green-900 bg-transparent border-0 cursor-pointer p-0" %>
-    <% end %>
   </div>
 
   <% if notifications.any? %>

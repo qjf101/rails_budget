@@ -15,6 +15,7 @@ class GoalContributionsController < ApplicationController
     @contribution.amount_cents = -@contribution.amount_cents.to_i if withdrawing?
 
     if @contribution.save
+      sweep_notifications
       close_modal_and_reload(withdrawing? ? "Withdrawn." : "Funds added.")
     else
       render :new, status: :unprocessable_entity

@@ -150,3 +150,49 @@ jobs:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
           if-no-files-found: ignore
+
+  deploy:
+    # Nothing ships unless the whole suite and both scanners pass.
+    needs: [ scan_ruby, scan_js, lint, test, system-test ]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write   # push the built image to ghcr.io
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Trust the deploy host
+        # Kamal does not set verify_host_key, so Net::SSH defaults to :always and a
+        # runner with an empty known_hosts refuses to connect.
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          ssh-keyscan -H 149.28.57.97 >> ~/.ssh/known_hosts
+
+      - name: Restore the master key
+        # .kamal/secrets reads config/master.key, which is gitignored and so absent
+        # from this checkout. The runner is ephemeral, so writing it here is fine.
+        run: echo "${{ secrets.RAILS_MASTER_KEY }}" > config/master.key
+
+      - name: Deploy
+        env:
+          # GITHUB_TOKEN authenticates to ghcr.io, so no registry PAT is stored here.
+          KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          RAILS_BUDGET_DATABASE_PASSWORD: ${{ secrets.RAILS_BUDGET_DATABASE_PASSWORD }}
+        run: bin/kamal deploy

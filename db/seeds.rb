@@ -1,5 +1,11 @@
+# The password is only a convenience for local work. Anywhere else it is random and
+# discarded: with DEMO_AUTO_LOGIN nobody signs in by hand, and ResetDemoDataJob
+# re-seeds nightly with a fresh one. A hardcoded password here would be a publicly
+# known login on any server this is seeded against.
 user = User.find_or_create_by!(email: ENV.fetch("DEMO_USER_EMAIL", "demo@example.com")) do |u|
-  u.password = "password123"
+  u.password = ENV.fetch("DEMO_USER_PASSWORD") do
+    Rails.env.development? ? "password123" : SecureRandom.hex(24)
+  end
 end
 
 categories = [

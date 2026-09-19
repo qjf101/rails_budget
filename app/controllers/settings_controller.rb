@@ -62,7 +62,7 @@ class SettingsController < ApplicationController
   private
 
   def notification_params
-    params.require(:user).permit(notification_preferences_attributes: [:id, :enabled])
+    params.require(:user).permit(notification_preferences_attributes: [ :id, :enabled ])
   end
 
   def profile_params

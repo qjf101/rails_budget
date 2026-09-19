@@ -3,13 +3,13 @@ class ReportsController < ApplicationController
     "last_3_months"  => "Last 3 Months",
     "last_6_months"  => "Last 6 Months",
     "last_12_months" => "Last 12 Months",
-    "this_year"      => "This Year",
+    "this_year"      => "This Year"
   }.freeze
   DEFAULT_RANGE = "last_6_months".freeze
 
   def index
     @range_key = RANGES.key?(params[:range]) ? params[:range] : DEFAULT_RANGE
-    @range_options = RANGES.map { |key, label| [label, key] }
+    @range_options = RANGES.map { |key, label| [ label, key ] }
     @range = date_range_for(@range_key)
 
     scope = current_user.transactions.where(date: @range)
@@ -54,10 +54,10 @@ class ReportsController < ApplicationController
     # Chartkick halves the opacity of every non-line series; a per-series `library`
     # hash is merged straight into the Chart.js dataset, which restores solid bars.
     [
-      { name: "Income",   data: @months.to_h { |m| [m.strftime("%b"), totals[[m, "income"]].to_i / 100.0] },
+      { name: "Income",   data: @months.to_h { |m| [ m.strftime("%b"), totals[[ m, "income" ]].to_i / 100.0 ] },
         library: { backgroundColor: "#16a34a", borderRadius: 6, borderWidth: 0 } },
-      { name: "Expenses", data: @months.to_h { |m| [m.strftime("%b"), totals[[m, "expense"]].to_i / 100.0] },
-        library: { backgroundColor: "#ef4444", borderRadius: 6, borderWidth: 0 } },
+      { name: "Expenses", data: @months.to_h { |m| [ m.strftime("%b"), totals[[ m, "expense" ]].to_i / 100.0 ] },
+        library: { backgroundColor: "#ef4444", borderRadius: 6, borderWidth: 0 } }
     ]
   end
 end

@@ -16,7 +16,7 @@ categories = [
   { name: "Entertainment",     icon: "film",            color: "#f97316" },
   { name: "Bills & Utilities", icon: "file-text",       color: "#06b6d4" },
   { name: "Savings",           icon: "piggy-bank",      color: "#3b82f6" },
-  { name: "Other",             icon: "more-horizontal", color: "#6b7280" },
+  { name: "Other",             icon: "more-horizontal", color: "#6b7280" }
 ].map.with_index do |attrs, i|
   user.categories.find_or_create_by!(name: attrs[:name]) do |c|
     c.icon = attrs[:icon]
@@ -38,7 +38,7 @@ budget.update!(income_cents: 4_500_00)
 allocations = {
   "Housing" => 1_200_00, "Food & Dining" => 500_00, "Transport" => 250_00,
   "Shopping" => 400_00, "Entertainment" => 300_00, "Bills & Utilities" => 700_00,
-  "Savings" => 800_00, "Other" => 250_00,
+  "Savings" => 800_00, "Other" => 250_00
 }
 categories.each do |category|
   BudgetAllocation.find_or_create_by!(budget: budget, category: category) do |a|
@@ -47,14 +47,14 @@ categories.each do |category|
 end
 
 merchant_names = {
-  "Housing"           => ["Rent Payment", "Mortgage Payment", "HOA Fees"],
-  "Food & Dining"     => ["Whole Foods", "Chipotle", "Starbucks", "DoorDash", "Corner Diner"],
-  "Transport"         => ["Uber", "Shell Gas Station", "Metro Transit", "Lyft"],
-  "Shopping"          => ["Amazon", "Target", "Best Buy", "H&M"],
-  "Entertainment"     => ["Netflix", "AMC Theatres", "Spotify", "Steam"],
-  "Bills & Utilities" => ["Electric Company", "Internet Provider", "Water Utility", "Phone Bill"],
-  "Savings"           => ["Transfer to Savings", "Emergency Fund Deposit"],
-  "Other"             => ["Miscellaneous Purchase", "ATM Withdrawal", "Cash Expense"],
+  "Housing"           => [ "Rent Payment", "Mortgage Payment", "HOA Fees" ],
+  "Food & Dining"     => [ "Whole Foods", "Chipotle", "Starbucks", "DoorDash", "Corner Diner" ],
+  "Transport"         => [ "Uber", "Shell Gas Station", "Metro Transit", "Lyft" ],
+  "Shopping"          => [ "Amazon", "Target", "Best Buy", "H&M" ],
+  "Entertainment"     => [ "Netflix", "AMC Theatres", "Spotify", "Steam" ],
+  "Bills & Utilities" => [ "Electric Company", "Internet Provider", "Water Utility", "Phone Bill" ],
+  "Savings"           => [ "Transfer to Savings", "Emergency Fund Deposit" ],
+  "Other"             => [ "Miscellaneous Purchase", "ATM Withdrawal", "Cash Expense" ]
 }
 
 25.times do |i|

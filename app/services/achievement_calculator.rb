@@ -20,7 +20,7 @@ class AchievementCalculator
         unlocked: total_saved_cents >= 10_000_00),
       Achievement.new(key: :under_budget, title: "Stayed Under Budget",
         description: "You stayed under budget this week.", icon: "shield-check",
-        unlocked: under_budget_this_week?),
+        unlocked: under_budget_this_week?)
     ]
   end
 

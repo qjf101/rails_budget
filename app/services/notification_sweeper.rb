@@ -2,7 +2,7 @@
 # not a model callback: this must not fire during seeding, imports or tests, and
 # an explicit call site is easier to keep out of those than an opt-out flag.
 class NotificationSweeper
-  GOAL_MILESTONES = [25, 50, 75, 100].freeze
+  GOAL_MILESTONES = [ 25, 50, 75, 100 ].freeze
 
   def initialize(user, month = Date.current)
     @user = user

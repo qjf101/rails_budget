@@ -54,7 +54,7 @@ class BudgetController < ApplicationController
   def month_options
     12.downto(0).map do |ago|
       month = ago.months.ago(Date.current).beginning_of_month
-      [month.strftime("%B %Y"), month.to_s]
+      [ month.strftime("%B %Y"), month.to_s ]
     end
   end
 

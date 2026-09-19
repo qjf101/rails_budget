@@ -6,18 +6,18 @@ class NotificationPreference < ApplicationRecord
     "budget_alerts" => {
       title: "Budget alerts",
       description: "Get notified when a category goes over budget",
-      default: true,
+      default: true
     },
     "goal_milestones" => {
       title: "Goal milestones",
       description: "Celebrate when you hit 25%, 50%, 75%, and 100% of a goal",
-      default: true,
+      default: true
     },
     "weekly_summary" => {
       title: "Weekly summary email",
       description: "A recap of income, spending, and progress every Monday",
-      default: false,
-    },
+      default: false
+    }
   }.freeze
 
   KEYS = TYPES.keys.freeze

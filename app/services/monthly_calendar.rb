@@ -20,10 +20,10 @@ class MonthlyCalendar
       (@month..@month.end_of_month).map do |date|
         DaySummary.new(
           date: date,
-          income_cents: sums[[date, "income"]].to_i,
-          expense_cents: sums[[date, "expense"]].to_i,
-          income_count: counts[[date, "income"]].to_i,
-          expense_count: counts[[date, "expense"]].to_i
+          income_cents: sums[[ date, "income" ]].to_i,
+          expense_cents: sums[[ date, "expense" ]].to_i,
+          income_count: counts[[ date, "income" ]].to_i,
+          expense_count: counts[[ date, "expense" ]].to_i
         )
       end
     end

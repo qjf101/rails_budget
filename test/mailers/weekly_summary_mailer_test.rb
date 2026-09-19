@@ -10,8 +10,8 @@ class WeeklySummaryMailerTest < ActionMailer::TestCase
   test "renders both a plain text and an html part" do
     mail = WeeklySummaryMailer.summary(@user)
 
-    assert_equal ["mail@example.com"], mail.to
-    assert_equal ["text/plain", "text/html"], mail.parts.map { |part| part.content_type.split(";").first }
+    assert_equal [ "mail@example.com" ], mail.to
+    assert_equal [ "text/plain", "text/html" ], mail.parts.map { |part| part.content_type.split(";").first }
   end
 
   test "the body renders currency, which needs ApplicationHelper in the mailer" do

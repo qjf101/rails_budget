@@ -8,6 +8,6 @@ class CreateBudgets < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :budgets, [:user_id, :month], unique: true
+    add_index :budgets, [ :user_id, :month ], unique: true
   end
 end

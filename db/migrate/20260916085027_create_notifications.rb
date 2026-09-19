@@ -13,7 +13,7 @@ class CreateNotifications < ActiveRecord::Migration[8.1]
     end
 
     # Drives the dropdown list.
-    add_index :notifications, [:user_id, :created_at]
+    add_index :notifications, [ :user_id, :created_at ]
 
     # Drives the unread badge, which runs on every page load. A partial index only
     # holds the unread rows, so it stays small however much history accumulates.

@@ -9,7 +9,7 @@ class CreateNotificationPreferences < ActiveRecord::Migration[8.1]
 
     # A validation can't stop two concurrent requests writing the same user+key;
     # this index is what actually enforces one row per setting per user.
-    add_index :notification_preferences, [:user_id, :key], unique: true
+    add_index :notification_preferences, [ :user_id, :key ], unique: true
 
     # Every user gets a full set of rows, so "who wants the weekly summary?" stays
     # a plain join instead of a LEFT JOIN with a Ruby-side default.

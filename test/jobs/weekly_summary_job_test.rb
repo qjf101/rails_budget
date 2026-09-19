@@ -16,7 +16,7 @@ class WeeklySummaryJobTest < ActiveJob::TestCase
       WeeklySummaryJob.perform_now
     end
 
-    assert_enqueued_email_with WeeklySummaryMailer, :summary, args: [@wants, Date.current]
+    assert_enqueued_email_with WeeklySummaryMailer, :summary, args: [ @wants, Date.current ]
   end
 
   test "sends nothing once the preference is turned off" do

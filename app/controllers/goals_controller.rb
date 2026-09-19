@@ -1,7 +1,7 @@
 class GoalsController < ApplicationController
   PALETTE = %w[#3b82f6 #ef4444 #8b5cf6 #f59e0b #f97316 #06b6d4 #22c55e #ec4899 #6b7280].freeze
 
-  before_action :set_goal, only: [:edit, :update, :destroy]
+  before_action :set_goal, only: [ :edit, :update, :destroy ]
 
   def index
     @savings = current_user.savings

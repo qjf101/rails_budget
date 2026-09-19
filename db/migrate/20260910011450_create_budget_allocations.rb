@@ -8,6 +8,6 @@ class CreateBudgetAllocations < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :budget_allocations, [:budget_id, :category_id], unique: true
+    add_index :budget_allocations, [ :budget_id, :category_id ], unique: true
   end
 end

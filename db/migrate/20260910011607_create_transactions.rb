@@ -15,6 +15,6 @@ class CreateTransactions < ActiveRecord::Migration[8.1]
     end
 
     change_column_default :transactions, :source, from: nil, to: "manual"
-    add_index :transactions, [:user_id, :external_id], unique: true, where: "external_id IS NOT NULL"
+    add_index :transactions, [ :user_id, :external_id ], unique: true, where: "external_id IS NOT NULL"
   end
 end

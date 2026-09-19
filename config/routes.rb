@@ -3,19 +3,19 @@ Rails.application.routes.draw do
 
   root "dashboard#index"
 
-  resources :transactions, except: [:show]
-  resources :goals, except: [:show] do
-    resources :contributions, only: [:new, :create, :destroy], controller: "goal_contributions"
+  resources :transactions, except: [ :show ]
+  resources :goals, except: [ :show ] do
+    resources :contributions, only: [ :new, :create, :destroy ], controller: "goal_contributions"
   end
 
-  resources :contributions, only: [:new, :create], controller: "goal_contributions"
-  resources :goal_transfers, only: [:new, :create]
+  resources :contributions, only: [ :new, :create ], controller: "goal_contributions"
+  resources :goal_transfers, only: [ :new, :create ]
 
   get  "budget", to: "budget#allocate"
   get  "budget/calendar", to: "budget#calendar"
   patch "budget", to: "budget#update_allocations"
 
-  resources :notifications, only: [:index, :show]
+  resources :notifications, only: [ :index, :show ]
 
   get "reports", to: "reports#index"
   get    "settings",                to: "settings#edit"
@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   get    "settings/delete_account", to: "settings#confirm_delete",  as: :confirm_delete_account
   delete "settings/avatar",         to: "settings#destroy_avatar",  as: :settings_avatar
   delete "settings/account",        to: "settings#destroy_account", as: :settings_account
-  resources :categories, only: [:index, :new, :create, :edit, :update, :destroy]
+  resources :categories, only: [ :index, :new, :create, :edit, :update, :destroy ]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

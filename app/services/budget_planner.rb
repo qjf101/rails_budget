@@ -9,7 +9,7 @@ class BudgetPlanner
     "Entertainment"     => 5..10,
     "Bills & Utilities" => 5..10,
     "Savings"           => 15..20,
-    "Other"             => 5..10,
+    "Other"             => 5..10
   }.freeze
 
   # Anything the user adds beyond the seeded set gets a modest default.

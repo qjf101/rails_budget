@@ -42,6 +42,11 @@ class GoalContribution < ApplicationRecord
   # correct when several contributions are staged together on one save (e.g. splitting one
   # transaction across goals) regardless of what's been saved to the DB yet.
   def does_not_exceed_transaction_amount
+    # A blank amount on the form leaves this nil, and Integer > nil raises. The
+    # transaction's own presence validation reports the real problem; there is
+    # nothing to exceed until it has a value.
+    return if source_transaction.amount_cents.nil?
+
     siblings_total = source_transaction.goal_contributions.reject { |gc| gc.marked_for_destruction? || gc.equal?(self) }.sum(&:amount_cents)
     if siblings_total + amount_cents.to_i > source_transaction.amount_cents
       errors.add(:amount_cents, "cannot exceed the transaction amount")

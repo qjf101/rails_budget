@@ -56,7 +56,7 @@ module ApplicationHelper
     "tree" => '<path d="M12 3l6 8h-4l4 6H6l4-6H6z"/><path d="M12 17v4"/>',
     "baby" => '<circle cx="12" cy="8" r="4"/><path d="M10 7h.01M14 7h.01"/><path d="M6 21a6 6 0 0112 0"/>',
     "target" => '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
-    "star" => '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
+    "star" => '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>'
   }.freeze
 
   def icon_paths(key)

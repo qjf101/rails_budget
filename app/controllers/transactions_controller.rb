@@ -1,5 +1,5 @@
 class TransactionsController < ApplicationController
-  before_action :set_transaction, only: [:edit, :update, :destroy]
+  before_action :set_transaction, only: [ :edit, :update, :destroy ]
   helper_method :savings_category
 
   PER_PAGE = 12
@@ -10,7 +10,7 @@ class TransactionsController < ApplicationController
   def index
     @categories = current_user.categories
     # The pill shows the resolved span ("Sep 1 – Sep 30, 2026"), not the key.
-    @range_options = RANGE_KEYS.map { |key| [range_label(key), key] }
+    @range_options = RANGE_KEYS.map { |key| [ range_label(key), key ] }
 
     # The summary cards always describe the current month, independent of the filter.
     @month = Date.current
@@ -38,7 +38,7 @@ class TransactionsController < ApplicationController
     end
 
     @transactions_count = scope.count
-    @total_pages = [(@transactions_count.to_f / PER_PAGE).ceil, 1].max
+    @total_pages = [ (@transactions_count.to_f / PER_PAGE).ceil, 1 ].max
     @page = params[:page].to_i.clamp(1, @total_pages)
     @offset = (@page - 1) * PER_PAGE
     @transactions = scope.limit(PER_PAGE).offset(@offset)
@@ -90,7 +90,16 @@ class TransactionsController < ApplicationController
     @categories = current_user.categories
     @goals = current_user.savings&.goals.to_a
     # On a re-render the submitted split wins; opening Edit falls back to the split already saved.
-    @goal_allocations = params[:goal_allocations]&.permit!&.to_h || persisted_goal_allocations
+    @goal_allocations = submitted_goal_allocations || persisted_goal_allocations
+  end
+
+  # The keys are goal ids, so permit exactly the ones this user owns rather than
+  # permit!. Anything else in the hash is dropped instead of being carried along.
+  def submitted_goal_allocations
+    submitted = params[:goal_allocations]
+    return nil if submitted.blank?
+
+    submitted.permit(*@goals.map { |goal| goal.id.to_s }).to_h
   end
 
   def persisted_goal_allocations
@@ -187,6 +196,6 @@ class TransactionsController < ApplicationController
 
   def transaction_params
     params.require(:transaction).permit(:date, :amount, :transaction_type, :category_id, :description, :notes,
-      goal_contributions_attributes: [:id, :goal_id, :amount, :_destroy])
+      goal_contributions_attributes: [ :id, :goal_id, :amount, :_destroy ])
   end
 end

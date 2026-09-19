@@ -60,6 +60,11 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+# Links the ghcr.io package to this repository, so GitHub Actions' GITHUB_TOKEN
+# inherits write access. Without it a package pushed from a personal token is
+# unlinked and CI pushes fail with "permission_denied: read_package".
+LABEL org.opencontainers.image.source="https://github.com/qjf101/rails_budget"
+
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash

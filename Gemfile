@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.3", ">= 8.1.3.1"
+gem "rails", "~> 8.1.4"
 # Pin away from json 3.0.2: its JSON.parse(source, opts) signature switched opts to
 # keyword-only, which breaks ActiveSupport's positional-hash call and crashes session
 # cookie decryption with ArgumentError (wrong number of arguments (given 2, expected 1)).
